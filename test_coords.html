@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geolocation Tracker</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0a0a0a;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: #1a1a1a;
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid #333;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            text-align: center;
+            width: 80%;
+            max-width: 500px;
+        }
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: #5e6ad2;
+        }
+        .coords {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1.2rem;
+            background: #000;
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid #444;
+            margin-bottom: 1rem;
+        }
+        .log {
+            margin-top: 2rem;
+            text-align: left;
+            max-height: 200px;
+            overflow-y: auto;
+            font-size: 0.8rem;
+            color: #888;
+            border-top: 1px solid #333;
+            padding-top: 1rem;
+        }
+        .status {
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            color: #aaa;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Browser Geolocation API</h1>
+        <div class="status" id="status">Initializing...</div>
+        <div class="coords" id="coords">Lat: --, Lng: --</div>
+        <div class="log" id="log">
+            <div>Logs will appear here every 5s...</div>
+        </div>
+    </div>
+
+    <script>
+        const coordsEl = document.getElementById('coords');
+        const logEl = document.getElementById('log');
+        const statusEl = document.getElementById('status');
+
+        function updateLocation() {
+            if (!navigator.geolocation) {
+                statusEl.innerText = "Geolocation not supported";
+                return;
+            }
+
+            statusEl.innerText = "Requesting location...";
+            
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+                    const time = new Date().toLocaleTimeString();
+
+                    coordsEl.innerText = `Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}`;
+                    statusEl.innerText = "Last update: " + time;
+
+                    const entry = document.createElement('div');
+                    entry.innerText = `[${time}] Received: ${lat}, ${lng}`;
+                    logEl.prepend(entry);
+                },
+                (error) => {
+                    statusEl.innerText = "Error: " + error.message;
+                    console.error(error);
+                },
+                { enableHighAccuracy: true }
+            );
+        }
+
+        // Run every 5 seconds
+        updateLocation();
+        setInterval(updateLocation, 5000);
+    </script>
+</body>
+</html>

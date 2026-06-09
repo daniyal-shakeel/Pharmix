@@ -1,0 +1,237 @@
+# =========================
+# Dependencies
+# =========================
+node_modules/
+jspm_packages/
+bower_components/
+
+# =========================
+# Logs
+# =========================
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# =========================
+# Runtime Data
+# =========================
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# =========================
+# Environment Files
+# =========================
+.env
+.env.*
+!.env.example
+
+# =========================
+# Secrets & Keys
+# =========================
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+*.jks
+*.keystore
+secret.*
+secrets.*
+credentials.*
+firebase-adminsdk*.json
+serviceAccountKey.json
+
+# =========================
+# Build / Production
+# =========================
+dist/
+build/
+out/
+.next/
+.nuxt/
+.cache/
+coverage/
+.tmp/
+.temp/
+tmp/
+
+# =========================
+# Frontend Frameworks
+# =========================
+.vercel/
+.netlify/
+.svelte-kit/
+.angular/
+.storybook/
+
+# =========================
+# TypeScript
+# =========================
+*.tsbuildinfo
+
+# =========================
+# Testing
+# =========================
+coverage/
+.nyc_output/
+jest-results/
+playwright-report/
+test-results/
+frontend/.tanstack/
+
+# =========================
+# Docker
+# =========================
+docker-data/
+*.tar
+docker-compose.override.yml
+
+# =========================
+# Database Files
+# =========================
+*.sqlite
+*.sqlite3
+*.db
+*.mdb
+
+# =========================
+# OS Files
+# =========================
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# =========================
+# IDE / Editors
+# =========================
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*.bak
+
+# =========================
+# Package Managers
+# =========================
+.pnp
+.pnp.js
+
+# =========================
+# Cache Files
+# =========================
+.eslintcache
+.stylelintcache
+.parcel-cache/
+.cache-loader/
+
+# =========================
+# Debug Files
+# =========================
+*.stackdump
+
+# =========================
+# API Testing
+# =========================
+*.postman_collection.json
+*.insomnia.json
+
+# =========================
+# Docs Folder
+# =========================
+docs/
+
+# =========================
+# AI / Agent Files
+# =========================
+.cursor/
+.antigravity/
+.ai/
+.llm/
+.prompts/
+.rules/
+agents/
+memory/
+context/
+
+# =========================
+# Uploads / User Files
+# =========================
+uploads/
+public/uploads/
+storage/
+media/
+
+# =========================
+# Generated Files
+# =========================
+*.zip
+*.rar
+*.7z
+*.gz
+
+# =========================
+# Firebase
+# =========================
+.firebase/
+firebase-debug.log
+
+# =========================
+# AWS / GCP / Azure
+# =========================
+.aws/
+.gcp/
+.azure/
+
+# =========================
+# Terraform
+# =========================
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+
+# =========================
+# Kubernetes
+# =========================
+kubeconfig*
+*.kubeconfig
+
+# =========================
+# SSL Certificates
+# =========================
+ssl/
+certs/
+
+# =========================
+# Misc
+# =========================
+*.local
+*.cache
+*.swp
+*.swo
+
+
+node_modules
+.env
+dist
+build
+coverage
+
+# Optional: if you use specific IDEs or tools
+.vscode
+.idea
+*.sublime-project
+*.sublime-workspace
+*.swp
+.DS_Store
+Thumbs.db
+.agents/
