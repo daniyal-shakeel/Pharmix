@@ -2,6 +2,8 @@ require('dotenv').config();
 const express = require('express');
 const http = require('http');
 const cors = require('cors');
+const helmet = require('helmet');
+const mongoSanitize = require('express-mongo-sanitize');
 const { Server } = require('socket.io');
 const connectDB = require('./config/db');
 const { connectRedis, redisClient } = require('./config/redis');
@@ -21,6 +23,13 @@ const analyticsRoutes = require('./routes/analyticsRoutes');
 const linkRoutes = require('./routes/linkRoutes');
 const shipmentRoutes = require('./routes/shipmentRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
+const xssClean = require('./middleware/xss');
+const rateLimit = require('express-rate-limit');
+const {
+  blockDeleteOperations,
+  restrictUpdates,
+  checkDevicePostLimit
+} = require('./middleware/demoMode');
 
 connectDB();
 connectRedis();
@@ -38,8 +47,72 @@ const io = new Server(server, {
   cors: { origin: '*', methods: ['GET', 'POST'] }
 });
 
-app.use(cors());
-app.use(express.json());
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(',')
+  : ['http://localhost:5173', 'http://localhost:3000', 'http://localhost:5000', 'http://localhost:8080'];
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
+};
+
+const readLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 100,
+  message: {
+    success: false,
+    message: 'Too many requests. Please try again later.'
+  },
+  standardHeaders: true,
+  legacyHeaders: false
+});
+
+const writeLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 10,
+  message: {
+    success: false,
+    message: 'Too many requests. Please try again later.'
+  },
+  standardHeaders: true,
+  legacyHeaders: false
+});
+
+app.use(cors(corsOptions));
+app.use(helmet());
+app.use((req, res, next) => {
+  Object.defineProperty(req, 'query', {
+    value: { ...req.query },
+    writable: true,
+    configurable: true,
+    enumerable: true
+  });
+  next();
+});
+app.use(mongoSanitize());
+app.use(express.json({ limit: '1mb' }));
+app.use(express.urlencoded({ limit: '1mb', extended: true }));
+app.use(xssClean);
+
+app.use((req, res, next) => {
+  if (req.path === '/api/payments/webhook') {
+    return next();
+  }
+  if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method)) {
+    return writeLimiter(req, res, next);
+  }
+  return readLimiter(req, res, next);
+});
+
+app.use(blockDeleteOperations);
+app.use(restrictUpdates);
+app.use(checkDevicePostLimit);
 
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);

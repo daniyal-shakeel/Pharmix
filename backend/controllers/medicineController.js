@@ -4,11 +4,18 @@ const Pharmacy = require('../models/Pharmacy');
 const PharmacyInventory = require('../models/PharmacyInventory');
 const StockHistory = require('../models/StockHistory');
 const { generateId } = require('../utils/cryptoId');
+const { getCache, setCache, clearCachePattern } = require('../utils/cache');
 
 const getMedicines = async (req, res) => {
   try {
     const { role, entityId } = req.user;
     const { category, manufacturerId } = req.query;
+
+    const cacheKey = `medicines:${role}:${entityId || 'admin'}:${category || ''}:${manufacturerId || ''}`;
+    const cached = await getCache(cacheKey);
+    if (cached) {
+      return res.json(cached);
+    }
 
     let filter = {};
 
@@ -29,6 +36,7 @@ const getMedicines = async (req, res) => {
     }
 
     const medicines = await Medicine.find(filter).sort({ createdAt: -1 });
+    await setCache(cacheKey, medicines, 300);
     res.json(medicines);
   } catch (error) {
     console.error('Error fetching medicines:', error);
@@ -41,30 +49,32 @@ const getMedicineDetails = async (req, res) => {
     const { id } = req.params;
     const { role, entityId } = req.user;
 
+    const cacheKey = `medicine:${id}:${role}:${entityId || 'admin'}`;
+    const cached = await getCache(cacheKey);
+    if (cached) {
+      return res.json(cached);
+    }
+
     const medicine = await Medicine.findOne({ id });
     if (!medicine) {
       return res.status(404).json({ error: 'Medicine not found' });
     }
 
+    let responseData;
     if (role === 'admin') {
-      return res.json(medicine);
-    }
-
-    if (role === 'manufacturer') {
+      responseData = medicine;
+    } else if (role === 'manufacturer') {
       if (medicine.manufacturerId !== entityId) {
         return res.status(403).json({ error: 'Access denied. Medicine belongs to another manufacturer.' });
       }
-      return res.json(medicine);
-    }
-
-    if (role === 'pharmacy' || role === 'customer') {
+      responseData = medicine;
+    } else if (role === 'pharmacy' || role === 'customer') {
       const pharmacy = await Pharmacy.findOne({ id: entityId });
       if (!pharmacy || !pharmacy.linkedManufacturers.includes(medicine.manufacturerId)) {
         return res.status(403).json({ error: 'Access denied. Manufacturer is not linked.' });
       }
       
-      // Return limited details for pharmacy/customer
-      return res.json({
+      responseData = {
         id: medicine.id,
         name: medicine.name,
         category: medicine.category,
@@ -75,11 +85,13 @@ const getMedicineDetails = async (req, res) => {
         expiry: medicine.expiry,
         rx: medicine.rx,
         description: medicine.description,
-        // intentionally omitting 'batch' for limited view
-      });
+      };
+    } else {
+      return res.status(403).json({ error: 'Access denied' });
     }
 
-    return res.status(403).json({ error: 'Access denied' });
+    await setCache(cacheKey, responseData, 300);
+    return res.json(responseData);
   } catch (error) {
     console.error('Error fetching medicine details:', error);
     res.status(500).json({ error: 'Server error fetching medicine details' });
@@ -138,6 +150,9 @@ const createMedicine = async (req, res) => {
       description: (description || '').trim(),
     });
 
+    await clearCachePattern('medicine:*');
+    await clearCachePattern('medicines:*');
+
     res.status(201).json(medicine);
   } catch (error) {
     console.error('Error creating medicine:', error);
@@ -147,7 +162,13 @@ const createMedicine = async (req, res) => {
 
 const getCategories = async (req, res) => {
   try {
+    const cacheKey = 'medicines:categories';
+    const cached = await getCache(cacheKey);
+    if (cached) {
+      return res.json(cached);
+    }
     const categories = await Medicine.distinct('category');
+    await setCache(cacheKey, categories, 300);
     res.json(categories);
   } catch (error) {
     console.error('Error fetching categories:', error);
@@ -268,6 +289,9 @@ const updateMedicine = async (req, res) => {
     });
 
     await medicine.save();
+
+    await clearCachePattern('medicine:*');
+    await clearCachePattern('medicines:*');
 
     if (updates.stock !== undefined && updates.stock !== oldStock) {
       await StockHistory.create({

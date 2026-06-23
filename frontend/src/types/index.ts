@@ -7,6 +7,7 @@ export interface User {
   role: Role;
   avatar?: string;
   entityId?: string;
+  isSuperAdmin?: boolean;
 }
 
 export interface Manufacturer {

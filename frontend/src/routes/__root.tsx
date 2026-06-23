@@ -105,7 +105,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <HeadContent />
         <script
@@ -193,7 +193,6 @@ function RootComponent() {
       <Toaster
         theme={theme === "dark" ? "dark" : "light"}
         position="bottom-right"
-        pauseWhenPageIsHidden
         toastOptions={{
           style: {
             background: theme === "dark" ? "oklch(0.18 0.014 270)" : "oklch(1 0 0)",

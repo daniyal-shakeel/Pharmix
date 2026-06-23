@@ -18,6 +18,7 @@ import {
   MapPin,
   FileText,
   Boxes,
+  Terminal,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useAuth, useCart, useNotifications } from "@/store";
@@ -50,6 +51,7 @@ type NavItem = {
   label: string;
   icon: React.ComponentType<{ className?: string }>;
   roles?: Role[];
+  superAdminOnly?: boolean;
 };
 
 const NAV: NavItem[] = [
@@ -100,6 +102,7 @@ const NAV: NavItem[] = [
     roles: ["admin", "manufacturer", "pharmacy"],
   },
   { to: "/app/reports", label: "Reports", icon: FileText, roles: ["admin", "manufacturer"] },
+  { to: "/app/logs", label: "Logs", icon: Terminal, roles: ["admin"], superAdminOnly: true },
   { to: "/app/settings", label: "Settings", icon: Settings },
 ];
 
@@ -151,7 +154,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   if (!user) return null;
   const role = user.role;
-  const items = NAV.filter((n) => !n.roles || n.roles.includes(role));
+  const items = NAV.filter((n) => {
+    if (n.superAdminOnly && !user.isSuperAdmin) return false;
+    return !n.roles || n.roles.includes(role);
+  });
 
   return (
     <div className="flex min-h-screen w-full bg-canvas text-foreground">

@@ -161,7 +161,7 @@ Tracks local stock levels inside a pharmacy after a shipment is successfully del
 ### **1. Auth Module (`/api/auth`)**
 * File: `routes/authRoutes.js` ➔ `controllers/authController.js`
 * Routes & Logic:
-  * `POST /login` ➔ `login`: Authenticates credentials and roles. If the role is `admin`, it verifies credentials against the environment configuration; otherwise, it queries the database users collection. Generates a stateless JWT token containing user context.
+  * `POST /login` ➔ `login`: Authenticates credentials and roles. If the role is `admin`, it first checks for **Super Admin** credentials (`SUPER_ADMIN_EMAIL`/`SUPER_ADMIN_PASSWORD`) which grants unrestricted access with `isSuperAdmin: true` in the JWT payload. If the email matches but password check fails, it returns `Invalid Super Admin Credentials`. If those don't match, it verifies against the standard admin environment configuration (`ADMIN_EMAIL`/`ADMIN_PASSWORD`). For all other roles, it queries the database users collection. Generates a stateless JWT token containing user context.
   * `POST /logout` ➔ `logout`: A stateless endpoint that confirms token invalidation on the client side.
   * `GET /check` ➔ `checkAuth`: Verifies the validity of the client token using the verification middleware.
 
@@ -276,7 +276,25 @@ The TanStack Router maps directory structures directly to application pages:
 
 ---
 
-## 6. Coding & Flow Patterns Summary
+## 6. Production Demo Mode & Security Enhancements
+
+When `NODE_ENV=production` is set in the environment, the platform enters **Demo Mode Protection** to secure the application during public client presentations and portfolio reviews.
+
+### Demo Mode Rules:
+1. **One-Time Creation Limit**: Restricts all resource creations (POST routes like Users, Medicines, Orders, Links) to exactly one document in the database per type to prevent spam/database abuse.
+2. **Device POST Throttling**: Restricts every unique device (identified by `x-device-id` header generated in frontend localStorage) to exactly one successful POST write request. Subsequent POST requests receive a `403` error.
+3. **Update & Delete Disabling**: Disables all PUT and PATCH updates, and blocks all DELETE operations for every user role, returning a clear error response.
+4. **Redis Cache-Aside**: GET requests query the Redis cache first. If a cache miss or timeout occurs, the server falls back to MongoDB. The cache is automatically invalidated or updated immediately when records are added or modified.
+5. **Autofill Demo Credentials**: If in production, the login page fetches active demo credentials from the backend via `/api/auth/demo-credentials` and renders a neat copy/autofill panel.
+6. **Audit Action Logs**: All allowed and blocked actions are logged with timestamp, user ID, IP address, and route details to a text file `logs/demo-actions.log` and a queryable MongoDB `DemoLog` collection.
+7. **Admin Logs & Analytics Dashboard**: Admin users gain access to a dedicated logs viewer route (`/app/logs`) presenting paginated action tables and visual allowed-vs-blocked charts.
+8. **Express Throttling**: Limits POST/PUT/PATCH/DELETE writes to 10 req/min/IP and GET reads to 100 req/min/IP.
+9. **Industry Security Standards**: Integrates Helmet headers, MongoDB query sanitization, HTML XSS scrubbing, and strict payload size limits (1MB).
+10. **Super Admin Bypass**: A dedicated Super Admin account (`SUPER_ADMIN_EMAIL`/`SUPER_ADMIN_PASSWORD` in `.env`) completely bypasses all demo mode restrictions listed above. When authenticated with these credentials, the JWT token includes `isSuperAdmin: true`, and all middlewares (`blockDeleteOperations`, `restrictUpdates`, `checkCreateLimit`, `checkDevicePostLimit`, and inline shipment limits) skip their restrictions. The `/app/logs` page is exclusively accessible to this Super Admin.
+
+---
+
+## 7. Coding & Flow Patterns Summary
 
 * **State Preservation Rules**: User session checks on app loads to verify credentials via token verification.
 * **Separation of Concerns**: Business logic is separated into individual controllers away from Express routes, while schemas are structured individually in the models directory.

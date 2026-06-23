@@ -12,6 +12,7 @@ import {
   Github,
   Sun,
   Moon,
+  BarChart3,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 

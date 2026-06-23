@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/select";
 import { useAuth } from "@/store";
 import type { Role } from "@/types";
-import { Pill, Eye, EyeOff } from "lucide-react";
+import { Pill, Eye, EyeOff, X } from "lucide-react";
 import { toast } from "sonner";
 import api from "@/api/base";
 
@@ -34,16 +34,33 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [showDomain, setShowDomain] = useState(true);
   const [role, setRole] = useState<Role>("admin");
   const [loading, setLoading] = useState(false);
+  const [demoCreds, setDemoCreds] = useState<any>(null);
+  const [isDemo, setIsDemo] = useState(false);
+
+  useEffect(() => {
+    const fetchDemo = async () => {
+      try {
+        const res = await api.get("/auth/demo-credentials");
+        if (res.data && res.data.demoMode) {
+          setDemoCreds(res.data.credentials);
+          setIsDemo(true);
+        }
+      } catch (err) {}
+    };
+    fetchDemo();
+  }, []);
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const fullEmail = email.includes("@") ? email : `${email}@pharmix.com`;
-      const response = await api.post("/auth/login", { email: fullEmail, password, role });
+      const fullEmail = showDomain && !email.includes("@") ? `${email}@pharmix.com` : email;
+      const loginRole = role === "superAdmin" ? "admin" : role;
+      const response = await api.post("/auth/login", { email: fullEmail, password, role: loginRole });
       const { user, token } = response.data;
 
       localStorage.setItem("_phx_token", token);
@@ -93,12 +110,27 @@ function Login() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="h-10 bg-surface border-border pr-24"
-                  placeholder="username"
+                  className={`h-10 bg-surface border-border ${showDomain ? "pr-28" : ""}`}
+                  placeholder={showDomain ? "username" : "email@example.com"}
                 />
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-medium text-muted-foreground pointer-events-none bg-surface-2 px-1.5 py-0.5 rounded border border-border">
-                  @pharmix.com
-                </span>
+                {showDomain ? (
+                  <button
+                    type="button"
+                    onClick={() => setShowDomain(false)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 text-[10px] font-medium text-muted-foreground bg-surface-2 px-1.5 py-0.5 rounded border border-border hover:border-primary/40 hover:text-primary transition-colors cursor-pointer"
+                  >
+                    @pharmix.com
+                    <X className="h-3 w-3" />
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setShowDomain(true)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-medium text-muted-foreground bg-surface-2 px-1.5 py-0.5 rounded border border-border hover:border-primary/40 hover:text-primary transition-colors cursor-pointer"
+                  >
+                    + @pharmix.com
+                  </button>
+                )}
               </div>
             </div>
 
@@ -136,6 +168,7 @@ function Login() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="admin">Admin</SelectItem>
+                  <SelectItem value="superAdmin">Super Admin</SelectItem>
                   <SelectItem value="manufacturer">Manufacturer</SelectItem>
                   <SelectItem value="pharmacy">Pharmacy</SelectItem>
                   <SelectItem value="delivery">Delivery Partner</SelectItem>
@@ -152,6 +185,34 @@ function Login() {
               {loading ? "Authenticating..." : "Sign in"}
             </Button>
           </form>
+
+          {isDemo && demoCreds && (
+            <div className="mt-6 pt-6 border-t border-border space-y-3">
+              <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/80 text-center">
+                Demo Credentials (Click to autofill)
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                {Object.entries(demoCreds).map(([roleKey, creds]: any) => (
+                  <button
+                    key={roleKey}
+                    type="button"
+                    onClick={() => {
+                      const rawEmail = creds.email.split("@")[0];
+                      setEmail(rawEmail);
+                      setShowDomain(true);
+                      setPassword(creds.password);
+                      setRole(roleKey as Role);
+                      toast.success(`${roleKey.charAt(0).toUpperCase() + roleKey.slice(1)} credentials autofilled`);
+                    }}
+                    className="p-2.5 rounded-lg border border-border bg-surface-2 hover:bg-accent/40 text-xs flex flex-col justify-between items-start transition-colors cursor-pointer text-left"
+                  >
+                    <span className="font-semibold text-primary capitalize">{roleKey === "delivery" ? "Rider" : roleKey}</span>
+                    <span className="text-[10px] text-muted-foreground truncate w-full mt-0.5">{creds.email}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

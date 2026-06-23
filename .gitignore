@@ -235,3 +235,4 @@ coverage
 .DS_Store
 Thumbs.db
 .agents/
+backend/seed.js

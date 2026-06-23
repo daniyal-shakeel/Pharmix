@@ -3,6 +3,7 @@ const Medicine = require('../models/Medicine');
 const AnalyticsCache = require('../models/AnalyticsCache');
 const Shipment = require('../models/Shipment');
 const DeliveryPartner = require('../models/DeliveryPartner');
+const DemoLog = require('../models/DemoLog');
 
 const getManufacturerAnalytics = async (req, res) => {
   try {
@@ -348,4 +349,77 @@ const getSidebarSummary = async (req, res) => {
   }
 };
 
-module.exports = { getManufacturerAnalytics, getAdminAnalytics, getPharmacyAnalytics, getSidebarSummary };
+const getDemoLogs = async (req, res) => {
+  try {
+    const { page, limit, result, action, search } = req.query;
+    const query = {};
+    if (result) {
+      query.result = result;
+    }
+    if (action) {
+      query.action = action;
+    }
+    if (search) {
+      query.$or = [
+        { ip: { $regex: search, $options: 'i' } },
+        { userId: { $regex: search, $options: 'i' } },
+        { route: { $regex: search, $options: 'i' } }
+      ];
+    }
+    const pageNum = parseInt(page) || 1;
+    const limitNum = parseInt(limit) || 20;
+    const skip = (pageNum - 1) * limitNum;
+    const logs = await DemoLog.find(query).sort({ timestamp: -1 }).skip(skip).limit(limitNum);
+    const total = await DemoLog.countDocuments(query);
+    res.json({
+      logs,
+      total,
+      pages: Math.ceil(total / limitNum)
+    });
+  } catch (error) {
+    console.error('Error fetching logs:', error);
+    res.status(500).json({ error: 'Server error fetching logs' });
+  }
+};
+
+const getDemoLogsStats = async (req, res) => {
+  try {
+    const total = await DemoLog.countDocuments();
+    const blocked = await DemoLog.countDocuments({ result: { $regex: 'BLOCKED', $options: 'i' } });
+    const allowed = await DemoLog.countDocuments({ result: 'ALLOWED' });
+    const stats = await DemoLog.aggregate([
+      {
+        $group: {
+          _id: { $dateToString: { format: '%Y-%m-%d', date: '$timestamp' } },
+          allowed: { $sum: { $cond: [{ $eq: ['$result', 'ALLOWED'] }, 1, 0] } },
+          blocked: { $sum: { $cond: [{ $ne: ['$result', 'ALLOWED'] }, 1, 0] } }
+        }
+      },
+      { $sort: { _id: 1 } },
+      { $limit: 10 }
+    ]);
+    const chartData = stats.map(s => ({
+      date: s._id,
+      allowed: s.allowed,
+      blocked: s.blocked
+    }));
+    res.json({
+      total,
+      blocked,
+      allowed,
+      chartData
+    });
+  } catch (error) {
+    console.error('Error fetching log stats:', error);
+    res.status(500).json({ error: 'Server error fetching log stats' });
+  }
+};
+
+module.exports = {
+  getManufacturerAnalytics,
+  getAdminAnalytics,
+  getPharmacyAnalytics,
+  getSidebarSummary,
+  getDemoLogs,
+  getDemoLogsStats
+};

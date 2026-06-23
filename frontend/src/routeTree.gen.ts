@@ -21,6 +21,7 @@ import { Route as AppPaymentsRouteImport } from './routes/app.payments'
 import { Route as AppPartnersRouteImport } from './routes/app.partners'
 import { Route as AppOrdersRouteImport } from './routes/app.orders'
 import { Route as AppNotificationsRouteImport } from './routes/app.notifications'
+import { Route as AppLogsRouteImport } from './routes/app.logs'
 import { Route as AppInventoryRouteImport } from './routes/app.inventory'
 import { Route as AppDeliveriesRouteImport } from './routes/app.deliveries'
 import { Route as AppDashboardRouteImport } from './routes/app.dashboard'
@@ -106,6 +107,11 @@ const AppOrdersRoute = AppOrdersRouteImport.update({
 const AppNotificationsRoute = AppNotificationsRouteImport.update({
   id: '/notifications',
   path: '/notifications',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppLogsRoute = AppLogsRouteImport.update({
+  id: '/logs',
+  path: '/logs',
   getParentRoute: () => AppRoute,
 } as any)
 const AppInventoryRoute = AppInventoryRouteImport.update({
@@ -249,6 +255,7 @@ export interface FileRoutesByFullPath {
   '/app/dashboard': typeof AppDashboardRoute
   '/app/deliveries': typeof AppDeliveriesRouteWithChildren
   '/app/inventory': typeof AppInventoryRoute
+  '/app/logs': typeof AppLogsRoute
   '/app/notifications': typeof AppNotificationsRoute
   '/app/orders': typeof AppOrdersRouteWithChildren
   '/app/partners': typeof AppPartnersRouteWithChildren
@@ -288,6 +295,7 @@ export interface FileRoutesByTo {
   '/app/checkout': typeof AppCheckoutRoute
   '/app/dashboard': typeof AppDashboardRoute
   '/app/inventory': typeof AppInventoryRoute
+  '/app/logs': typeof AppLogsRoute
   '/app/notifications': typeof AppNotificationsRoute
   '/app/reports': typeof AppReportsRoute
   '/app/settings': typeof AppSettingsRoute
@@ -322,6 +330,7 @@ export interface FileRoutesById {
   '/app/dashboard': typeof AppDashboardRoute
   '/app/deliveries': typeof AppDeliveriesRouteWithChildren
   '/app/inventory': typeof AppInventoryRoute
+  '/app/logs': typeof AppLogsRoute
   '/app/notifications': typeof AppNotificationsRoute
   '/app/orders': typeof AppOrdersRouteWithChildren
   '/app/partners': typeof AppPartnersRouteWithChildren
@@ -364,6 +373,7 @@ export interface FileRouteTypes {
     | '/app/dashboard'
     | '/app/deliveries'
     | '/app/inventory'
+    | '/app/logs'
     | '/app/notifications'
     | '/app/orders'
     | '/app/partners'
@@ -403,6 +413,7 @@ export interface FileRouteTypes {
     | '/app/checkout'
     | '/app/dashboard'
     | '/app/inventory'
+    | '/app/logs'
     | '/app/notifications'
     | '/app/reports'
     | '/app/settings'
@@ -436,6 +447,7 @@ export interface FileRouteTypes {
     | '/app/dashboard'
     | '/app/deliveries'
     | '/app/inventory'
+    | '/app/logs'
     | '/app/notifications'
     | '/app/orders'
     | '/app/partners'
@@ -557,6 +569,13 @@ declare module '@tanstack/react-router' {
       path: '/notifications'
       fullPath: '/app/notifications'
       preLoaderRoute: typeof AppNotificationsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/logs': {
+      id: '/app/logs'
+      path: '/logs'
+      fullPath: '/app/logs'
+      preLoaderRoute: typeof AppLogsRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/inventory': {
@@ -867,6 +886,7 @@ interface AppRouteChildren {
   AppDashboardRoute: typeof AppDashboardRoute
   AppDeliveriesRoute: typeof AppDeliveriesRouteWithChildren
   AppInventoryRoute: typeof AppInventoryRoute
+  AppLogsRoute: typeof AppLogsRoute
   AppNotificationsRoute: typeof AppNotificationsRoute
   AppOrdersRoute: typeof AppOrdersRouteWithChildren
   AppPartnersRoute: typeof AppPartnersRouteWithChildren
@@ -887,6 +907,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppDashboardRoute: AppDashboardRoute,
   AppDeliveriesRoute: AppDeliveriesRouteWithChildren,
   AppInventoryRoute: AppInventoryRoute,
+  AppLogsRoute: AppLogsRoute,
   AppNotificationsRoute: AppNotificationsRoute,
   AppOrdersRoute: AppOrdersRouteWithChildren,
   AppPartnersRoute: AppPartnersRouteWithChildren,

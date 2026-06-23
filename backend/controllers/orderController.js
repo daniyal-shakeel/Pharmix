@@ -10,6 +10,7 @@ const PharmacyInventory = require('../models/PharmacyInventory');
 const Payment = require('../models/Payment');
 const { generateId } = require('../utils/cryptoId');
 const { createNotification } = require('../utils/notification');
+const { logDemoAction } = require('../middleware/demoMode');
 
 const createPaymentIntent = async (req, res) => {
   try {
@@ -184,6 +185,25 @@ const updateOrderStatus = async (req, res) => {
       const rider = await DeliveryPartner.findOne({ id: riderId, status: 'active' });
       if (!rider) return res.status(400).json({ error: 'Rider inactive' });
       const pharmacy = await Pharmacy.findOne({ id: order.pharmacyId });
+
+      if (process.env.NODE_ENV === 'production' && !(req.user && req.user.isSuperAdmin)) {
+        const count = await Shipment.countDocuments();
+        if (count > 0) {
+          await logDemoAction({
+            ip: req.ip || req.connection.remoteAddress,
+            userId: req.user ? (req.user.id || req.user.entityId) : 'guest',
+            route: `${req.method} ${req.originalUrl || req.url}`,
+            action: 'CREATE',
+            result: 'BLOCKED (Demo Limit Reached)'
+          });
+          return res.status(403).json({
+            success: false,
+            demoMode: true,
+            error: 'Only one shipment can be created in the demo environment. Please contact the developer for full access.',
+            message: 'Only one shipment can be created in the demo environment. Please contact the developer for full access.'
+          });
+        }
+      }
 
       const newShipment = await Shipment.create({
         id: generateId('SHP'),
