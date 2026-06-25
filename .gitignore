@@ -43,7 +43,6 @@ pids/
 *.keystore
 secret.*
 secrets.*
-credentials.*
 firebase-adminsdk*.json
 serviceAccountKey.json
 
@@ -235,4 +234,3 @@ coverage
 .DS_Store
 Thumbs.db
 .agents/
-backend/seed.js
