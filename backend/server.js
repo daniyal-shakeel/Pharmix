@@ -114,6 +114,10 @@ app.use(blockDeleteOperations);
 app.use(restrictUpdates);
 app.use(checkDevicePostLimit);
 
+app.get('/health', (_, res) => {
+  res.status(200).json({ success: true, message: 'API is running' });
+});
+
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/manufacturers', manufacturerRoutes);
@@ -163,14 +167,14 @@ io.on('connection', (socket) => {
 
     try {
       await redisClient.set(`shipment:${shipmentId}:location`, JSON.stringify({ lat, lng, updatedAt: new Date() }));
-      
+
       const now = Date.now();
       const lastUpdate = lastMongoUpdate.get(shipmentId) || 0;
-      
+
       if (now - lastUpdate > 20000) {
         await Shipment.findOneAndUpdate(
           { id: shipmentId },
-          { 
+          {
             riderLocation: { lat, lng, updatedAt: new Date() },
             $push: { path: { lat, lng, timestamp: new Date() } }
           }
