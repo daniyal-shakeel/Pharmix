@@ -50,58 +50,60 @@ function Cart() {
                     {cart.items.map((it) => (
                       <div
                         key={it.medicineId}
-                        className="flex items-center gap-3 p-3 rounded-md border border-border bg-surface-2"
+                        className="flex flex-col sm:flex-row sm:items-center gap-3 p-3 rounded-md border border-border bg-surface-2"
                       >
                         <div className="flex-1 min-w-0">
                           <div className="text-sm font-medium truncate">{it.name}</div>
                           <div className="text-[11px] text-muted-foreground font-mono">{it.medicineId}</div>
                         </div>
-                        <div className="flex items-center gap-1 shrink-0">
-                          <Button
-                            size="icon"
-                            variant="ghost"
-                            className="h-7 w-7"
-                            disabled={busyItems.includes(it.medicineId)}
-                            onClick={() => setQty(it.medicineId, Math.max(1, it.qty - 1))}
-                          >
-                            <Minus className="h-3 w-3" />
-                          </Button>
-                          <span className="w-8 text-center text-xs tabular-nums">{it.qty}</span>
-                          <Button
-                            size="icon"
-                            variant="ghost"
-                            className="h-7 w-7"
-                            disabled={busyItems.includes(it.medicineId)}
-                            onClick={() => setQty(it.medicineId, it.qty + 1)}
-                          >
-                            <Plus className="h-3 w-3" />
-                          </Button>
-                        </div>
-                        <div className="flex flex-wrap gap-1 max-w-[120px]">
-                          {[100, 200, 300, 400, 600].map((q) => (
+                        <div className="flex flex-wrap items-center gap-3 justify-between sm:justify-end w-full sm:w-auto">
+                          <div className="flex items-center gap-1 shrink-0">
                             <Button
-                              key={q}
-                              variant="outline"
-                              className={`h-5 px-1.5 text-[9px] border-border hover:bg-primary/10 hover:text-primary transition-colors ${it.qty === q ? "bg-primary/10 text-primary border-primary/30" : "bg-surface"}`}
+                              size="icon"
+                              variant="ghost"
+                              className="h-7 w-7"
                               disabled={busyItems.includes(it.medicineId)}
-                              onClick={() => setQty(it.medicineId, q)}
+                              onClick={() => setQty(it.medicineId, Math.max(1, it.qty - 1))}
                             >
-                              {q}
+                              <Minus className="h-3 w-3" />
                             </Button>
-                          ))}
+                            <span className="w-8 text-center text-xs tabular-nums">{it.qty}</span>
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              className="h-7 w-7"
+                              disabled={busyItems.includes(it.medicineId)}
+                              onClick={() => setQty(it.medicineId, it.qty + 1)}
+                            >
+                              <Plus className="h-3 w-3" />
+                            </Button>
+                          </div>
+                          <div className="flex flex-wrap gap-1 max-w-[120px]">
+                            {[100, 200, 300, 400, 600].map((q) => (
+                              <Button
+                                key={q}
+                                variant="outline"
+                                className={`h-5 px-1.5 text-[9px] border-border hover:bg-primary/10 hover:text-primary transition-colors ${it.qty === q ? "bg-primary/10 text-primary border-primary/30" : "bg-surface"}`}
+                                disabled={busyItems.includes(it.medicineId)}
+                                onClick={() => setQty(it.medicineId, q)}
+                              >
+                                {q}
+                              </Button>
+                            ))}
+                          </div>
+                          <div className="w-20 text-left sm:text-right text-sm tabular-nums shrink-0 font-medium">
+                            Rs {(it.price * it.qty).toFixed(2)}
+                          </div>
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="h-7 w-7 text-destructive shrink-0"
+                            disabled={busyItems.includes(it.medicineId)}
+                            onClick={() => remove(it.medicineId)}
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
                         </div>
-                        <div className="w-20 text-right text-sm tabular-nums shrink-0">
-                          Rs {(it.price * it.qty).toFixed(2)}
-                        </div>
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          className="h-7 w-7 text-destructive shrink-0"
-                          disabled={busyItems.includes(it.medicineId)}
-                          onClick={() => remove(it.medicineId)}
-                        >
-                          <Trash2 className="h-3 w-3" />
-                        </Button>
                       </div>
                     ))}
                   </div>

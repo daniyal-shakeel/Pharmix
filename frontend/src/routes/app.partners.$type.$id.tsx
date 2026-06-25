@@ -133,7 +133,7 @@ function PartnerDetailsPage() {
         <div className="lg:col-span-2 space-y-6">
           
           {/* Metrics Row */}
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="bg-surface rounded-xl p-4 border border-border flex flex-col items-center justify-center text-center">
               <Activity className="h-4 w-4 text-primary mb-2" />
               <div className="text-xl font-semibold tabular-nums">

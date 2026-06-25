@@ -138,6 +138,24 @@ function RootShell({ children }: { children: React.ReactNode }) {
   );
 }
 
+function NoticeBanner() {
+  return (
+    <div className="w-full bg-surface-2 text-muted-foreground text-[10px] sm:text-xs py-1.5 px-4 text-center border-b border-border flex flex-wrap items-center justify-center gap-x-2 gap-y-0.5 select-none font-medium z-50 relative">
+      <span className="flex items-center gap-1">
+        <span>🎨</span>
+        <span>UI/Design was</span>
+        <span className="text-foreground font-semibold">AI-generated</span>
+      </span>
+      <span className="opacity-30">|</span>
+      <span className="flex items-center gap-1">
+        <span>💻</span>
+        <span>Backend was custom-developed and coded by the</span>
+        <span className="text-foreground font-semibold">developer</span>
+      </span>
+    </div>
+  );
+}
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const [isAuthChecking, setIsAuthChecking] = useState(true);
@@ -176,12 +194,15 @@ function RootComponent() {
 
   if (isAuthChecking) {
     return (
-      <div className="flex min-h-screen w-full items-center justify-center bg-canvas">
-        <div className="flex flex-col items-center gap-4">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-          <p className="text-sm text-muted-foreground font-medium animate-pulse">
-            Verifying session...
-          </p>
+      <div className="flex min-h-screen w-full flex-col bg-canvas">
+        <NoticeBanner />
+        <div className="flex-1 flex items-center justify-center">
+          <div className="flex flex-col items-center gap-4">
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+            <p className="text-sm text-muted-foreground font-medium animate-pulse">
+              Verifying session...
+            </p>
+          </div>
         </div>
       </div>
     );
@@ -189,6 +210,7 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <NoticeBanner />
       <Outlet />
       <Toaster
         theme={theme === "dark" ? "dark" : "light"}
@@ -206,3 +228,4 @@ function RootComponent() {
     </QueryClientProvider>
   );
 }
+

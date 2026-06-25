@@ -211,17 +211,19 @@ function PaymentDetail() {
         <StatusBadge status={payment.status === 'succeeded' ? 'paid' : payment.status} />
       </PageHeader>
 
-      <div className={`rounded-xl border p-5 mb-6 flex items-center gap-5 ${paymentMeta.bg}`}>
-        <div className={`h-12 w-12 rounded-full border-2 grid place-items-center ${paymentMeta.bg}`}>
-          <PaymentIcon className={`h-6 w-6 ${paymentMeta.color}`} />
-        </div>
-        <div>
-          <div className={`text-base font-semibold ${paymentMeta.color}`}>{paymentMeta.label}</div>
-          <div className="text-xs text-muted-foreground mt-0.5 font-mono">
-            Stripe ID: {payment.stripePaymentIntentId}
+      <div className={`rounded-xl border p-5 mb-6 flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-5 ${paymentMeta.bg}`}>
+        <div className="flex items-center gap-4 min-w-0">
+          <div className={`h-12 w-12 rounded-full border-2 grid place-items-center shrink-0 ${paymentMeta.bg}`}>
+            <PaymentIcon className={`h-6 w-6 ${paymentMeta.color}`} />
+          </div>
+          <div className="min-w-0">
+            <div className={`text-base font-semibold ${paymentMeta.color}`}>{paymentMeta.label}</div>
+            <div className="text-xs text-muted-foreground mt-0.5 font-mono truncate" title={payment.stripePaymentIntentId}>
+              Stripe ID: {payment.stripePaymentIntentId}
+            </div>
           </div>
         </div>
-        <div className="ml-auto text-right">
+        <div className="sm:ml-auto text-left sm:text-right border-t sm:border-t-0 border-border/10 pt-3 sm:pt-0 shrink-0">
           <div className="text-2xl font-bold tabular-nums">Rs {payment.amount.toLocaleString()}</div>
           <div className="text-[10px] text-muted-foreground uppercase tracking-widest font-medium">
             {new Date(payment.createdAt).toLocaleString()}

@@ -423,7 +423,7 @@ function UsersIndex() {
                 </Avatar>
                 <div className="flex-1 min-w-0">
                   <div className="text-sm font-medium">{m.name}</div>
-                  <div className="text-[11px] text-muted-foreground">
+                  <div className="text-[11px] text-muted-foreground truncate">
                     {m.email} · {m.region}
                   </div>
                 </div>
@@ -467,7 +467,7 @@ function UsersIndex() {
                 </Avatar>
                 <div className="flex-1 min-w-0">
                   <div className="text-sm font-medium">{p.name}</div>
-                  <div className="text-[11px] text-muted-foreground">
+                  <div className="text-[11px] text-muted-foreground truncate">
                     {p.email} · {p.region}
                   </div>
                 </div>
@@ -510,7 +510,7 @@ function UsersIndex() {
                 </Avatar>
                 <div className="flex-1 min-w-0">
                   <div className="text-sm font-medium">{d.name}</div>
-                  <div className="text-[11px] text-muted-foreground">
+                  <div className="text-[11px] text-muted-foreground truncate">
                     {d.email} · {d.zone}
                   </div>
                 </div>

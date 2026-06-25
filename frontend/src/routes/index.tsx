@@ -59,7 +59,7 @@ function Landing() {
           <div className="flex items-center gap-2">
             <ThemeToggle />
             <Link to="/login">
-              <Button variant="ghost" size="sm" className="h-8 text-xs">
+              <Button variant="ghost" size="sm" className="h-8 text-xs hidden sm:inline-flex">
                 Sign in
               </Button>
             </Link>
@@ -81,7 +81,7 @@ function Landing() {
             <span className="h-1.5 w-1.5 rounded-full bg-primary pulse-dot" />
             New · Real-time GPS shipment tracking
           </Badge>
-          <h1 className="text-5xl md:text-7xl font-semibold tracking-tightest text-balance leading-[0.95] max-w-4xl mx-auto">
+          <h1 className="text-4xl sm:text-5xl md:text-7xl font-semibold tracking-tightest text-balance leading-[0.95] max-w-4xl mx-auto">
             Pharmaceutical supply chain,
             <br />
             <span className="text-muted-foreground">built for speed.</span>
@@ -118,7 +118,7 @@ function Landing() {
                 </span>
               </div>
               <div className="grid grid-cols-12 min-h-[420px]">
-                <aside className="col-span-2 border-r border-border bg-sidebar p-3 space-y-1">
+                <aside className="hidden sm:block col-span-2 border-r border-border bg-sidebar p-3 space-y-1">
                   {["Dashboard", "Catalog", "Orders", "Shipments", "Payments", "Analytics"].map(
                     (l, i) => (
                       <div
@@ -130,8 +130,8 @@ function Landing() {
                     ),
                   )}
                 </aside>
-                <div className="col-span-10 p-5 space-y-4">
-                  <div className="grid grid-cols-4 gap-3">
+                <div className="col-span-12 sm:col-span-10 p-5 space-y-4">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                     {[
                       { l: "Revenue", v: "Rs 79.2M", d: "+12.4%" },
                       { l: "Orders", v: "1,284", d: "+5.1%" },
@@ -148,8 +148,8 @@ function Landing() {
                       </div>
                     ))}
                   </div>
-                  <div className="grid grid-cols-3 gap-3">
-                    <div className="col-span-2 rounded-lg border border-border bg-surface-2 p-4 h-48">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div className="col-span-1 sm:col-span-2 rounded-lg border border-border bg-surface-2 p-4 h-48">
                       <div className="text-[11px] text-muted-foreground mb-3">
                         Revenue · 12 months
                       </div>
@@ -192,6 +192,7 @@ function Landing() {
                       )}
                     </div>
                   </div>
+
                 </div>
               </div>
             </div>

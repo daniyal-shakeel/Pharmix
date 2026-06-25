@@ -19,6 +19,7 @@ import {
   FileText,
   Boxes,
   Terminal,
+  Menu,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useAuth, useCart, useNotifications } from "@/store";
@@ -45,6 +46,7 @@ import {
 import type { Role } from "@/types";
 import api from "@/api/base";
 import { NotificationHub } from "@/components/notification-hub";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 type NavItem = {
   to: string;
@@ -119,6 +121,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
   const path = useRouterState({ select: (s) => s.location.pathname });
   const [openCmd, setOpenCmd] = useState(false);
+  const [openMenu, setOpenMenu] = useState(false);
   const cartCount = useCart((s) => s.carts.reduce((acc, cart) => acc + cart.items.reduce((a, b) => a + b.qty, 0), 0));
   const fetchCarts = useCart((s) => s.fetchCarts);
   const unreadNotifications = useNotifications((s) => s.unreadCount);
@@ -227,10 +230,80 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       {/* Main */}
       <div className="flex-1 flex flex-col min-w-0">
         <header className="sticky top-0 z-40 h-14 flex items-center gap-3 px-4 md:px-6 border-b border-border bg-canvas/80 backdrop-blur-xl">
+          <Sheet open={openMenu} onOpenChange={setOpenMenu}>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="sm" className="h-8 px-2 md:hidden">
+                <Menu className="h-4 w-4" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="p-0 w-60 bg-sidebar border-r border-border flex flex-col h-full">
+              <div className="h-14 flex items-center px-4 border-b border-border">
+                <Link to="/" className="flex items-center gap-2" onClick={() => setOpenMenu(false)}>
+                  <div className="h-7 w-7 rounded-md bg-primary/15 border border-primary/30 grid place-items-center">
+                    <Pill className="h-3.5 w-3.5 text-primary" />
+                  </div>
+                  <span className="font-semibold tracking-tight">Pharmix</span>
+                  <Badge
+                    variant="outline"
+                    className="ml-1 text-[10px] px-1.5 py-0 h-4 border-border bg-surface-2"
+                  >
+                    beta
+                  </Badge>
+                </Link>
+              </div>
+              <nav className="flex-1 overflow-y-auto py-3 px-2 space-y-0.5">
+                <div className="px-2 pb-1.5 pt-1 text-[11px] uppercase tracking-wider text-muted-foreground/70">
+                  Workspace
+                </div>
+                {items.map((n) => {
+                  const active = path === n.to || path.startsWith(n.to + "/");
+                  return (
+                    <Link
+                      key={n.to}
+                      to={n.to}
+                      onClick={() => setOpenMenu(false)}
+                      className={`group flex items-center gap-2.5 rounded-md px-2.5 py-1.5 text-[13px] transition-colors ${
+                        active
+                          ? "bg-accent text-foreground"
+                          : "text-muted-foreground hover:bg-accent/60 hover:text-foreground"
+                      }`}
+                    >
+                      <n.icon className={`h-4 w-4 ${active ? "text-primary" : ""}`} />
+                      <span>{n.label}</span>
+                    </Link>
+                  );
+                })}
+              </nav>
+              <div className="p-3 border-t border-border">
+                {summary ? (
+                  <div className="rounded-lg border border-primary/20 bg-primary/5 p-3">
+                    <div className="flex items-center gap-2 mb-1.5">
+                      <Radio className="h-3.5 w-3.5 text-primary animate-pulse" />
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-primary">{summary.title}</span>
+                    </div>
+                    <div className="text-xs font-semibold text-foreground mb-0.5">
+                      {summary.value}
+                    </div>
+                    <p className="text-[10px] text-muted-foreground leading-relaxed">
+                      {summary.description}
+                    </p>
+                  </div>
+                ) : (
+                  <div className="rounded-lg border border-border bg-surface-2 p-3">
+                    <div className="h-3 w-20 bg-muted animate-pulse rounded mb-2" />
+                    <div className="h-4 w-full bg-muted animate-pulse rounded mb-1" />
+                    <div className="h-3 w-2/3 bg-muted animate-pulse rounded" />
+                  </div>
+                )}
+              </div>
+            </SheetContent>
+          </Sheet>
+
           <button
             onClick={() => setOpenCmd(true)}
             className="flex-1 max-w-md flex items-center gap-2 h-8 px-3 rounded-md border border-border bg-surface text-xs text-muted-foreground hover:border-border-strong transition-colors"
           >
+
             <Search className="h-3.5 w-3.5" />
             <span>Search medicines, orders, partners...</span>
             <kbd className="ml-auto text-[10px] bg-surface-2 px-1.5 py-0.5 rounded border border-border">

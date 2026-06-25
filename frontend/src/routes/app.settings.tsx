@@ -223,7 +223,7 @@ function Settings() {
       <div className="space-y-3">
         <SectionPanel title="Profile">
           {loading ? (
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {[1, 2, 3, 4, 5, 6].map((i) => (
                 <div key={i} className="space-y-1.5">
                   <Skeleton className="h-3 w-16" />
@@ -233,7 +233,7 @@ function Settings() {
             </div>
           ) : (
             <form onSubmit={handleUpdateProfile}>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1.5">
                   <Label className="text-xs">
                     {isManufacturer ? "Company Name" : isPharmacy ? "Store Name" : isDelivery ? "Full Name" : "Name"}
@@ -375,7 +375,7 @@ function Settings() {
                       Configure expected delivery times based on total items in an order.
                     </p>
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-3">
                       <div className="text-[10px] uppercase font-semibold text-muted-foreground tracking-wider mb-1">
                         Thresholds (Total Items)
@@ -494,7 +494,7 @@ function Settings() {
         {isAdmin && (
           <SectionPanel title="Entity Relationships" description="Link and unlink entities across the platform">
             <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1.5">
                   <Label className="text-xs">Source Entity</Label>
                   <Select value={linkSource} onValueChange={setLinkSource}>

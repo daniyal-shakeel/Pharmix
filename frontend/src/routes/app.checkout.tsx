@@ -119,7 +119,7 @@ function Checkout() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
         <form onSubmit={handleSubmit} className="lg:col-span-2 space-y-3">
           <SectionPanel title="Shipping address">
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="space-y-1.5 text-foreground">
                 <Label className="text-xs">Full name</Label>
                 <Input defaultValue="Pharmacy Store A" className="h-9 bg-surface-2 border-border" />
@@ -128,7 +128,7 @@ function Checkout() {
                 <Label className="text-xs">Phone</Label>
                 <Input defaultValue="+92 300 1234567" className="h-9 bg-surface-2 border-border" />
               </div>
-              <div className="space-y-1.5 col-span-2">
+              <div className="space-y-1.5 sm:col-span-2">
                 <Label className="text-xs">Address</Label>
                 <Input
                   defaultValue="Street 1, Medical Complex"

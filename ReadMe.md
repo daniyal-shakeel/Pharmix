@@ -300,3 +300,21 @@ When `NODE_ENV=production` is set in the environment, the platform enters **Demo
 * **Separation of Concerns**: Business logic is separated into individual controllers away from Express routes, while schemas are structured individually in the models directory.
 * **Permission Constraints**: Requests are verified on the backend using auth middlewares and role-based route endpoints mapping configs.
 * **Auditing Consistency**: Every manual stock change automatically logs a history entry within the `StockHistory` audit ledger.
+
+---
+
+## 8. Mobile Responsiveness & Design Notice Banner Updates (June 2026)
+
+### 1. Global Notice Banner
+* **Location**: Integrated globally at the root route (`__root.tsx`).
+* **Text**: "🎨 UI/Design was AI-generated | 💻 Backend was custom-developed and coded by the developer"
+* **Styling**: Styled using Tailwind CSS v4 variables (`bg-surface-2`, `text-muted-foreground`, `border-border`, etc.) to automatically adapt to dark/light theme spaces without custom overlays.
+
+### 2. Mobile Layout & Navigation Optimizations
+* **App Shell Mobile Header**: Added a mobile slide-out drawer (Radix UI `Sheet` triggered via `Menu` hamburger icon) visible under `md` breakpoint, offering full navigation catalog and workspace summaries on mobile.
+* **Responsive Layout Sizing**:
+  * **Landing Page**: Shrunk hero headline from `text-5xl` to `text-4xl` on mobile, adjusted product mockup cards to `grid-cols-2` (on mobile) and hid the mockup sidebar.
+  * **Forms**: Profile settings form, delivery threshold configurations, entity relationship selectors, and shipping address forms converted to stack vertically on mobile screens using responsive grid modifiers (`grid-cols-1 sm:grid-cols-2`).
+  * **Cart Page**: Redesigned cart item rows to stack details above action buttons/prices on small mobile screens to prevent layout breakage and overflow.
+  * **Detail Pages**: Wrapped long Stripe Intent IDs in `truncate` and `break-all` classes with container flex-wrap support to preserve grid alignments across all viewport form factors.
+
