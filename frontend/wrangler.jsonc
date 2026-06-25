@@ -1,7 +1,25 @@
 {
-  "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "pharmix-frontend",
-  "compatibility_date": "2025-09-24",
-  "compatibility_flags": ["nodejs_compat"],
-  "main": "src/server.ts",
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "pharmix-frontend",
+	"compatibility_date": "2025-09-24",
+	"compatibility_flags": [
+		"nodejs_compat"
+	],
+	"main": "src/server.ts",
+	"routes": [
+		{
+			"pattern": "pharmix.daniyalbuilds.online",
+			"zone_name": "daniyalbuilds.online",
+			"custom_domain": true,
+			"enabled": true,
+			"previews_enabled": false
+		}
+	],
+	"vars": {
+		"VITE_API_URL": "https://pharmix-api.daniyalbuilds.online/api",
+		"VITE_SOCKET_URL": "https://pharmix-api.daniyalbuilds.online",
+		"VITE_STRIPE_PUBLISHABLE_KEY": "pk_test_51TVRDNAh3C9SsLuFhV1VbsHcjyegc5jqIxRxzVDuTNd38SfYzVKEmem7DWMRM5yVKUc5kh0AxbS9ntp1o5UcmXCP00FU2f1QuI"
+	},
+	"workers_dev": true,
+	"preview_urls": true,
 }
