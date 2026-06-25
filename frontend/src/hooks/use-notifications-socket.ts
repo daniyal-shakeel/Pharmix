@@ -3,7 +3,7 @@ import { io, Socket } from 'socket.io-client';
 import { useAuth, useNotifications } from '@/store';
 import { toast } from 'sonner';
 
-const SOCKET_URL = "http://localhost:5000";
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "http://localhost:5000";
 
 export function useNotificationsSocket() {
   const user = useAuth((s) => s.user);

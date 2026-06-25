@@ -24,7 +24,7 @@ export const Route = createFileRoute("/app/tracking/$id")({
   component: TrackingDetail,
 });
 
-const SOCKET_URL = "http://localhost:5000";
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "http://localhost:5000";
 
 const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
   const R = 6371;
